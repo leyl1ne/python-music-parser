@@ -5,11 +5,11 @@ import time
 
 def scraping_request(url):
     while True:
-        time.sleep(random.randrange(8, 13))
+        time.sleep(random.randrange(4, 8))
         ip = random.choice(PROXIES)
         headers = random.choice(HEADERS)
         try: 
-            response = requests.get(url, proxies={"https": ip},headers=headers, timeout=5)
+            response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
                 print(f"Proxy currently being used: {ip}")
                 return response.text 
