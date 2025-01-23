@@ -5,14 +5,15 @@ import time
 
 def scraping_request(url):
     while True:
-        time.sleep(random.randrange(4, 8))
-        ip = random.choice(PROXIES)
+        time.sleep(random.randrange(6, 9))
         headers = random.choice(HEADERS)
+
+        session = requests.Session()
         try: 
-            response = requests.get(url, headers=headers, timeout=5)
+            response = session.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
-                print(f"Proxy currently being used: {ip}")
-                return response.text 
+                print(f"Response successfully")
+                return response.content
             
             elif response.status_code == 403:
                 print("Forbidden client")

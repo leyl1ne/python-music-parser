@@ -1,14 +1,22 @@
 from utils.request_utils import scraping_request
 from bs4 import BeautifulSoup
 from config.settings import HOSTS 
+from models.song import Song
 
-def parse_main_info(song):
-    title = get_title(song)
-    artist = get_artist(song)
-    url = HOSTS["main"] + song.find("a").get("href")
-    lyrics = get_lyrics(url)
+def parse_main_info():
+    page = scraping_request(HOSTS["main"])
+    soup = BeautifulSoup(page, 'html.parser')
 
-    return title, artist, lyrics
+    songs = soup.find_all("div", class_="item")
+    for song in songs:
+        title = get_title(song)
+        artist = get_artist(song)
+        url = HOSTS["main"] + song.find("a").get("href")
+        lyrics = get_lyrics(url)
+
+
+        yield Song(title, artist, lyrics)
+
 
 
 def get_title(song):
@@ -16,7 +24,6 @@ def get_title(song):
     if title == "":
         title = "Unknown"
 
-    print(f"get_title: title - {title}")
     return title 
 
 def get_artist(song):
@@ -24,7 +31,6 @@ def get_artist(song):
     if artist == "":
         artist = "Unknown"
 
-    print(f"get_artist: artist - {artist}")
     return artist 
 
 def get_lyrics(url_page):
@@ -34,6 +40,6 @@ def get_lyrics(url_page):
     lyrics_html = soup.find("div", class_="main_text-slova").prettify()
     lyrics = lyrics_html.replace("<p>", "").replace("</p>", "").replace('<div class="main_text-slova">', "").replace("</div>", "")
 
+    lyrics = "\n".join(line for line in lyrics.splitlines() if line.strip())
 
-    print(f"get_lyrics: lyrics - {lyrics}")
     return lyrics 
